@@ -1,0 +1,41 @@
+<!doctype html><html lang="fr"><head>
+<meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>FRANCE — Créer un compte</title><link rel="stylesheet" href="/styles.css"/></head>
+<body><header data-nav></header>
+<main class="container">
+<section class="hero"><h1 class="h-title">Créer un compte</h1><p class="h-sub">Inscription sécurisée — accès espace client.</p></section>
+<section class="card">
+<div class="row">
+  <div><label class="muted">Prénom</label><input id="first_name" class="input"/></div>
+  <div><label class="muted">Nom</label><input id="last_name" class="input"/></div>
+</div>
+<div class="row" style="margin-top:12px;">
+  <div><label class="muted">Adresse</label><input id="address" class="input"/></div>
+  <div><label class="muted">Code postal</label><input id="postal" class="input"/></div>
+</div>
+<div class="row" style="margin-top:12px;">
+  <div><label class="muted">Téléphone</label><input id="phone" class="input"/></div>
+  <div><label class="muted">Email</label><input id="email" type="email" class="input"/></div>
+</div>
+<div style="margin-top:12px;"><label class="muted">Mot de passe</label><input id="password" type="password" class="input"/></div>
+<button id="btn" class="btn" style="margin-top:12px;">Créer mon compte</button>
+<div id="a" class="alert"></div>
+<hr/><div class="muted">Déjà un compte ? <a class="btn ghost" href="/login.html">Connexion</a></div>
+</section></main>
+<footer data-footer></footer>
+<script src="/app.js"></script><script src="/auth.js"></script>
+<script>
+const { api, setAlert } = window.FRANCE_AUTH;
+document.getElementById("btn").onclick = async () => {
+  const el = document.getElementById("a");
+  try{
+    setAlert(el, "");
+    await api("/api/register", {
+      first_name: first_name.value, last_name: last_name.value,
+      address: address.value, postal: postal.value, phone: phone.value,
+      email: email.value, password: password.value
+    });
+    location.href = "/client.html";
+  }catch(e){ setAlert(el, e.message, "err"); }
+};
+</script></body></html>

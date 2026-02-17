@@ -1,0 +1,53 @@
+<!doctype html><html lang="fr"><head>
+<meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>FRANCE — Dashboard</title><link rel="stylesheet" href="/styles.css"/></head>
+<body><header data-nav></header>
+<main class="container">
+<section class="hero"><h1 class="h-title">Dashboard investisseur</h1><p class="h-sub">Votre espace privé — transparence et suivi.</p></section>
+<section class="card">
+  <div id="state" class="muted">Chargement…</div>
+  <div id="box" style="display:none;">
+    <div class="grid" style="margin-top:12px;">
+      <div class="card" style="grid-column: span 6;"><h3>Identité</h3><div id="name" class="muted"></div><div id="email" class="muted"></div></div>
+      <div class="card" style="grid-column: span 6;"><h3>Coordonnées</h3><div id="addr" class="muted"></div><div id="phone" class="muted"></div></div>
+    </div>
+    <hr/>
+    <button id="logout" class="btn">Se déconnecter</button>
+    <div id="a" class="alert"></div>
+  </div>
+</section></main>
+<footer data-footer></footer>
+<script src="/app.js"></script><script src="/auth.js"></script>
+<script>
+const { api, setAlert } = window.FRANCE_AUTH;
+
+async function loadMe(){
+  const state = document.getElementById("state");
+  const box = document.getElementById("box");
+  try{
+    const r = await fetch("/api/me", { credentials: "include" });
+    const data = await r.json().catch(()=> ({}));
+    if(!r.ok) throw new Error(data.error || "Not authenticated");
+    state.style.display = "none"; box.style.display = "block";
+    const u = data.user;
+    document.getElementById("name").textContent = `${u.first_name} ${u.last_name}`;
+    document.getElementById("email").textContent = u.email;
+    document.getElementById("addr").textContent = `${u.address} — ${u.postal}`;
+    document.getElementById("phone").textContent = u.phone;
+  }catch(e){
+    state.textContent = "Session expirée. Merci de vous reconnecter.";
+    setTimeout(()=> location.href="/login.html", 900);
+  }
+}
+
+document.getElementById("logout").onclick = async () => {
+  const el = document.getElementById("a");
+  try{
+    await api("/api/logout", {});
+    setAlert(el, "Déconnecté.", "ok");
+    setTimeout(()=> location.href="/login.html", 600);
+  }catch(e){ setAlert(el, e.message, "err"); }
+};
+
+loadMe();
+</script></body></html>
